@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "249620557787",
+    "firebase_url": "https://pizzato-b2698.firebaseio.com",
+    "project_id": "pizzato-b2698",
+    "storage_bucket": "pizzato-b2698.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249620557787:android:01bb386eac5b11d08401fe",
+        "android_client_info": {
+          "package_name": "com.example.pizzato_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "249620557787-ro6kua9leqrd7rlfk3k5n544umk327sm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pizzato_app",
+            "certificate_hash": "fa06f2f2fa634a15be36e5fe845ffefb456ebc93"
+          }
+        },
+        {
+          "client_id": "249620557787-sf934426odskbgts7h8j30aj3msns92v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQEQrGFaSYGeAcdJGRKOqiDwDjRO-QNjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249620557787-sf934426odskbgts7h8j30aj3msns92v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
