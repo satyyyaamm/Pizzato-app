@@ -49,7 +49,9 @@ class _ToppingBtnState extends State<ToppingBtn> {
                   icon: Icon(EvaIcons.minus),
                   onPressed: () {
                     setState(() {
-                      widget.toppingsValue--;
+                      if (widget.toppingsValue != 0) {
+                        widget.toppingsValue--;
+                      }
                     });
                   },
                 ),
@@ -79,7 +81,9 @@ class _ToppingBtnState extends State<ToppingBtn> {
                   icon: Icon(EvaIcons.plus),
                   onPressed: () {
                     setState(() {
-                      widget.toppingsValue++;
+                      if (widget.toppingsValue != 5) {
+                        widget.toppingsValue++;
+                      }
                     });
                   },
                 ),

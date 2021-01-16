@@ -1,11 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pizzato_app/screens/LoginPage/LoginScreen.dart';
-// ignore: unused_import
-import 'package:pizzato_app/screens/home_screen/home_screen.dart';
 import 'package:pizzato_app/screens/splash_screen/headingText.dart';
 
 class SplashScreen extends StatefulWidget {
