@@ -5,8 +5,9 @@ import 'package:pizzato_app/helpers/middler.dart';
 import 'package:pizzato_app/helpers/tail.dart';
 import 'package:pizzato_app/screens/splash_screen/splash_screen.dart';
 import 'package:pizzato_app/services/Authentication.dart';
+import 'package:pizzato_app/services/Calculations.dart';
 import 'package:pizzato_app/services/manage_data.dart';
-import 'package:pizzato_app/services/maps.dart';
+import 'package:pizzato_app/services/Genratemaps.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: Calculations()),
         ChangeNotifierProvider.value(value: Authentication()),
         ChangeNotifierProvider.value(value: Header()),
         ChangeNotifierProvider.value(value: Middler()),

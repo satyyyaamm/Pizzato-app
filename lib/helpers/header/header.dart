@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:pizzato_app/helpers/header/food_options.dart';
-import 'package:pizzato_app/services/maps.dart';
+import 'package:pizzato_app/screens/Maps/maps.dart';
+import 'package:pizzato_app/services/Genratemaps.dart';
+import 'package:provider/provider.dart';
 
 class Header extends ChangeNotifier {
   Widget appBar(BuildContext context) {
@@ -14,15 +17,25 @@ class Header extends ChangeNotifier {
             children: [
               Icon(Icons.location_on_outlined, color: Colors.grey),
               SizedBox(width: 10),
-              Container(
-                constraints: BoxConstraints(maxWidth: 220),
-                child: Text(
-                  finalAddress,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        child: Maps(), type: PageTransitionType.bottomToTop),
+                  );
+                },
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: 220),
+                  child: Text(
+                    Provider.of<GenerateMaps>(context, listen: false)
+                        .finalAddress,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300),
+                  ),
                 ),
               ),
             ],

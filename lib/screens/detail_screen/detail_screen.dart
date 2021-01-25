@@ -8,6 +8,9 @@ import 'package:pizzato_app/screens/detail_screen/add_btn.dart';
 import 'package:pizzato_app/screens/detail_screen/circle_backgroundBtn.dart';
 import 'package:pizzato_app/screens/detail_screen/pizza_Size.dart';
 import 'package:pizzato_app/screens/detail_screen/toppings_Btn.dart';
+import 'package:pizzato_app/services/Calculations.dart';
+import 'package:pizzato_app/services/manage_data.dart';
+import 'package:provider/provider.dart';
 
 class DetailScreen extends StatefulWidget {
   final QueryDocumentSnapshot queryDocumentSnapshot;
@@ -19,11 +22,7 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  int cheeseValue = 0;
-  int chickenValue = 0;
-  int beconValue = 0;
-  int paneerValue = 0;
-  int veggiesValue = 0;
+  String selectedPizzaSize = 'S';
 
   @override
   Widget build(BuildContext context) {
@@ -155,21 +154,64 @@ class _DetailScreenState extends State<DetailScreen> {
                                   fontWeight: FontWeight.w600),
                             ),
                             ToppingBtn(
-                                toppingsValue: cheeseValue, text: 'Cheese'),
+                                addToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .addCheese();
+                                },
+                                removeToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .removeCheese();
+                                },
+                                toppingsValue: Provider.of<Calculations>(
+                                        context,
+                                        listen: true)
+                                    .getCheeseValue,
+                                text: 'Cheese'),
                             ToppingBtn(
-                                toppingsValue: chickenValue, text: 'Chicken'),
+                                addToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .addBeacon();
+                                },
+                                removeToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .removeBeacon();
+                                },
+                                toppingsValue: Provider.of<Calculations>(
+                                        context,
+                                        listen: true)
+                                    .getBeaconValue,
+                                text: 'Becon'),
                             ToppingBtn(
-                                toppingsValue: beconValue, text: 'Becon'),
-                            ToppingBtn(
-                                toppingsValue: paneerValue, text: 'Paneer'),
-                            ToppingBtn(
-                                toppingsValue: veggiesValue, text: 'Veggies'),
+                                addToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .addPaneer();
+                                },
+                                removeToppings: () {
+                                  Provider.of<Calculations>(context,
+                                          listen: false)
+                                      .removePaneer();
+                                },
+                                toppingsValue: Provider.of<Calculations>(
+                                        context,
+                                        listen: true)
+                                    .getPaneerValue,
+                                text: 'Paneer'),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  PizzaSize(pizzaSize: pizzaSize),
+                  PizzaSize(
+                    pizzaSize: pizzaSize,
+                    onSelected: (size) {
+                      selectedPizzaSize = size;
+                    },
+                  ),
                 ],
               ),
             ),
@@ -177,11 +219,14 @@ class _DetailScreenState extends State<DetailScreen> {
           Positioned(
             top: 50,
             left: 295,
-            child: CircleBackgroundBtn(
-              icon: Icon(Icons.close),
-              onpressed: () {
-                Navigator.pop(context);
-              },
+            child: Tooltip(
+              message: 'Close',
+              child: CircleBackgroundBtn(
+                icon: Icon(Icons.close),
+                onpressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ),
           Padding(
@@ -191,14 +236,29 @@ class _DetailScreenState extends State<DetailScreen> {
               children: [
                 AddBtn(
                     onpressed: () {
-                      FirebaseFirestore.instance.collection('Cart').add({
+                      Provider.of<ManageData>(context, listen: false)
+                          .collectionReference
+                          .doc(Provider.of<ManageData>(context, listen: false)
+                              .user
+                              .uid)
+                          .collection('Cart')
+                          .add({
                         'image': widget.queryDocumentSnapshot.data()['image'],
                         'name': widget.queryDocumentSnapshot.data()['name'],
                         'price': widget.queryDocumentSnapshot.data()['price'],
                         'notPrice':
                             widget.queryDocumentSnapshot.data()['notPrice'],
                         'rating': widget.queryDocumentSnapshot.data()['rating'],
-                        'size': widget.queryDocumentSnapshot.data()['size'],
+                        'size': selectedPizzaSize,
+                        'cheese':
+                            Provider.of<Calculations>(context, listen: false)
+                                .getCheeseValue,
+                        'paneer':
+                            Provider.of<Calculations>(context, listen: false)
+                                .getPaneerValue,
+                        'beacon':
+                            Provider.of<Calculations>(context, listen: false)
+                                .getBeaconValue,
                         'category':
                             widget.queryDocumentSnapshot.data()['category']
                       }).whenComplete(
@@ -220,15 +280,44 @@ class _DetailScreenState extends State<DetailScreen> {
                       );
                     },
                     text: 'Add to cart'),
-                CircleBackgroundBtn(
-                  icon: Icon(EvaIcons.shoppingBagOutline),
-                  onpressed: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: Cart(), type: PageTransitionType.bottomToTop),
-                    );
-                  },
+                Stack(
+                  children: [
+                    CircleBackgroundBtn(
+                      icon: Icon(EvaIcons.shoppingBagOutline),
+                      onpressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              child: Cart(),
+                              type: PageTransitionType.bottomToTop),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      left: 30,
+                      child: CircleAvatar(
+                          radius: 10,
+                          child: StreamBuilder(
+                              stream: Provider.of<ManageData>(context,
+                                      listen: false)
+                                  .collectionReference
+                                  .doc(Provider.of<ManageData>(context,
+                                          listen: false)
+                                      .user
+                                      .uid)
+                                  .collection('Cart')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                int totalItems = 0;
+                                if (snapshot.connectionState ==
+                                    ConnectionState.active) {
+                                  List documents = snapshot.data.docs;
+                                  totalItems = documents.length;
+                                }
+                                return Text('$totalItems' ?? '0');
+                              })),
+                    ),
+                  ],
                 ),
               ],
             ),

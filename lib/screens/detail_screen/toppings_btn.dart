@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 class ToppingBtn extends StatefulWidget {
   final String text;
   int toppingsValue;
+  Function addToppings;
+  Function removeToppings;
   ToppingBtn({
     Key key,
     @required this.toppingsValue,
     this.text,
+    this.addToppings,
+    this.removeToppings,
   }) : super(key: key);
 
   @override
@@ -47,13 +51,7 @@ class _ToppingBtnState extends State<ToppingBtn> {
                 ),
                 child: IconButton(
                   icon: Icon(EvaIcons.minus),
-                  onPressed: () {
-                    setState(() {
-                      if (widget.toppingsValue != 0) {
-                        widget.toppingsValue--;
-                      }
-                    });
-                  },
+                  onPressed: widget.removeToppings,
                 ),
               ),
               SizedBox(width: 10),
@@ -79,13 +77,7 @@ class _ToppingBtnState extends State<ToppingBtn> {
                 ),
                 child: IconButton(
                   icon: Icon(EvaIcons.plus),
-                  onPressed: () {
-                    setState(() {
-                      if (widget.toppingsValue != 5) {
-                        widget.toppingsValue++;
-                      }
-                    });
-                  },
+                  onPressed: widget.addToppings,
                 ),
               )
             ],

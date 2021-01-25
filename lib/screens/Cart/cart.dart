@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pizzato_app/screens/Cart/location_button.dart';
+import 'package:pizzato_app/screens/Maps/maps.dart';
 import 'package:pizzato_app/screens/detail_screen/add_btn.dart';
 import 'package:pizzato_app/screens/detail_screen/circle_backgroundBtn.dart';
 import 'package:pizzato_app/screens/detail_screen/detail_screen.dart';
+import 'package:pizzato_app/services/Genratemaps.dart';
 import 'package:pizzato_app/services/manage_data.dart';
 import 'package:provider/provider.dart';
 
@@ -31,14 +33,14 @@ class _CartState extends State<Cart> {
               children: [
                 Text(
                   'Your',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 22,
                       color: Colors.grey,
                       fontWeight: FontWeight.w400),
                 ),
                 Text(
                   'Cart',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 44,
                       color: Colors.black,
                       fontWeight: FontWeight.w500),
@@ -47,7 +49,7 @@ class _CartState extends State<Cart> {
                   height: 280,
                   child: FutureBuilder(
                     future: Provider.of<ManageData>(context, listen: false)
-                        .fetchData('Cart'),
+                        .fetchDataForCart("User"),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
@@ -57,21 +59,21 @@ class _CartState extends State<Cart> {
                       return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: DetailScreen(
-                                          queryDocumentSnapshot:
-                                              snapshot.data[index],
-                                        ),
-                                        type: PageTransitionType.topToBottom),
-                                  );
-                                },
-                                child: Container(
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: DetailScreen(
+                                      queryDocumentSnapshot:
+                                          snapshot.data[index],
+                                    ),
+                                    type: PageTransitionType.topToBottom),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Container(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -117,7 +119,7 @@ class _CartState extends State<Cart> {
                                                           top: 5),
                                                   child: Container(
                                                     child: Text(
-                                                      'x2 Cheese',
+                                                      '${snapshot.data[index].data()['cheese']}x Cheese',
                                                       style: TextStyle(
                                                           fontSize: 13,
                                                           color: Colors.grey),
@@ -130,7 +132,20 @@ class _CartState extends State<Cart> {
                                                           top: 5),
                                                   child: Container(
                                                     child: Text(
-                                                      'x3 Paneer',
+                                                      '${snapshot.data[index].data()['paneer']}x Paneer',
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          color: Colors.grey),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5),
+                                                  child: Container(
+                                                    child: Text(
+                                                      '${snapshot.data[index].data()['beacon']}x Beacon',
                                                       style: TextStyle(
                                                           fontSize: 13,
                                                           color: Colors.grey),
@@ -142,20 +157,31 @@ class _CartState extends State<Cart> {
                                           ),
                                         ],
                                       ),
-                                      Container(
-                                        child: Text(
-                                          '₹ ${snapshot.data[index].data()['price']}',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold),
-                                        ),
+                                      Column(
+                                        children: [
+                                          IconButton(
+                                              icon: Icon(
+                                                Icons.close,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () {}),
+                                          SizedBox(height: 29),
+                                          Container(
+                                            child: Text(
+                                              '₹ ${snapshot.data[index].data()['price']}',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         },
                       );
@@ -178,11 +204,24 @@ class _CartState extends State<Cart> {
                         ]),
                     child: Column(
                       children: [
-                        LocationButton(
-                          onpressed: () {},
-                          text: 'Indrayani Nagar',
-                          icon: Icon(Icons.location_on_outlined),
-                          icon2: Icon(Icons.edit),
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 250),
+                          child: LocationButton(
+                            onpressed: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: Maps(),
+                                    type:
+                                        PageTransitionType.leftToRightWithFade),
+                              );
+                            },
+                            text: Provider.of<GenerateMaps>(context,
+                                    listen: false)
+                                .getMainAddress,
+                            icon: Icon(Icons.location_on_outlined),
+                            icon2: Icon(Icons.edit),
+                          ),
                         ),
                         LocationButton(
                           onpressed: () {},
@@ -202,63 +241,70 @@ class _CartState extends State<Cart> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20, top: 20, right: 10),
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: FutureBuilder(
+                    future: Provider.of<ManageData>(context, listen: false)
+                        .fetchDataForCart('User'),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      return Container(
+                        child: Column(
                           children: [
-                            Text(
-                              'Subtotal',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.grey),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Subtotal',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.grey),
+                                ),
+                                Text(
+                                  '₹${snapshot.data['price']}',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.grey),
+                                )
+                              ],
                             ),
-                            Text(
-                              '₹200',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.grey),
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Delivery charges',
-                                style:
-                                    TextStyle(fontSize: 18, color: Colors.grey),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Delivery charges',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.grey),
+                                  ),
+                                  Text(
+                                    '₹40',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.grey),
+                                  )
+                                ],
                               ),
-                              Text(
-                                '₹40',
-                                style:
-                                    TextStyle(fontSize: 18, color: Colors.grey),
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              '₹240',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Total',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '₹240',
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
                             )
                           ],
-                        )
-                      ],
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pizzato_app/screens/LoginPage/LoginScreen.dart';
+import 'package:pizzato_app/screens/home_screen/home_screen.dart';
 import 'package:pizzato_app/screens/splash_screen/headingText.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+String userUid;
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -11,15 +15,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Future getuid() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    userUid = sharedPreferences.getString('uid');
+  }
+
   @override
   void initState() {
-    Timer(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        PageTransition(
-            child: LoginScreen(), type: PageTransitionType.rightToLeft),
-      );
-    });
+    getuid().whenComplete(
+      () => Timer(
+        Duration(seconds: 3),
+        () {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+                child: userUid == null ? LoginScreen() : HomeScreen(),
+                type: PageTransitionType.rightToLeft),
+          );
+        },
+      ),
+    );
     super.initState();
   }
 

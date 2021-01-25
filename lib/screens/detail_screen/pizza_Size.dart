@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PizzaSize extends StatefulWidget {
+  final Function(String) onSelected;
   const PizzaSize({
     Key key,
     @required this.pizzaSize,
+    this.onSelected,
   }) : super(key: key);
 
   final List pizzaSize;
@@ -24,6 +26,7 @@ class _PizzaSizeState extends State<PizzaSize> {
           for (var i = 0; i < widget.pizzaSize.length; i++)
             GestureDetector(
               onTap: () {
+                widget.onSelected('${widget.pizzaSize[i]}');
                 setState(() {
                   _selected = i;
                 });
